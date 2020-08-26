@@ -1,13 +1,20 @@
 <template>
-  <div class="calculator">
-    <ul class="calculator__list">
-      <li v-for="{year, kwh} in getEnergyTaxList" :key="year">
-        <comForm :year="year" :kwh="kwh"></comForm>
-      </li>
-    </ul>
+  <v-container class="calculator">
+    <v-row class="text-center">
+      <v-col cols="12">
+        <h1>Belastingteruggave Rekenmachine</h1>
+      </v-col>
+    </v-row>
+    <div class="calculator__list">
+      <div v-for="{year, kwh} in getEnergyTaxList" :key="year">
+        <v-col cols="12">
+          <comForm :year="year" :kwh="kwh"></comForm>
+        </v-col>
+      </div>
+    </div>
 
     <comForm year="2018"></comForm>
-  </div>
+  </v-container>
 </template>
 
 <script>

@@ -5,33 +5,23 @@
       <v-text-field v-model="VerbruikLaag" :rules="numRules" label="Verbruik laag" required></v-text-field>
 
       <v-text-field v-model="VerbruikHoog" :rules="numRules" label="Verbruik hoog" required></v-text-field>
-      <!-- 
-        <v-btn
-          :disabled="!valid"
-          color="success"
-          class="mr-4"
-          @click="calculate"
-          type="number"
-        >Bereken</v-btn>
 
-        <v-btn color="error" class="mr-4" @click="reset">Nieuwe getallen</v-btn>
-
-      <v-btn color="warning" @click="resetValidation">Reset form validatie</v-btn>-->
+      <v-btn
+        :disabled="!valid"
+        color="success"
+        class="mr-4"
+        @click="setShowResults"
+        type="number"
+      >Bereken</v-btn>
     </v-form>
-    <v-container>
+    <v-container v-if="showResults">
       <v-row align="center">
         <ul>
           <li>
             <b>Totaal aantal Kwh: {{totalKwh}}</b>
           </li>
           <li>
-            <b>Totaal eerste schijf: {{totalKwh}}</b>
-          </li>
-          <li>
-            <b>Totaal aantal Kwh: {{totalKwh}}</b>
-          </li>
-          <li>
-            <b>Totaal aantal Kwh: {{totalKwh}}</b>
+            <b>Totaal eerste schijf (tot {{firstTierBoundry}} ): {{totalFirstTierCosts}}</b>
           </li>
         </ul>
       </v-row>
@@ -48,33 +38,45 @@ export default {
   },
   data: () => ({
     valid: true,
+    showResults: false,
     VerbruikLaag: "",
     VerbruikHoog: "",
+    firstTierBoundry: "",
+    firstTierCosts: "",
     numRules: [
       (v) =>
         (!!v && !isNaN(parseFloat(v))) ||
         "Ingevulde waarde moet een nummer zijn",
     ],
+    restNum: 0,
   }),
   methods: {
-    calculate() {
+    calculateTotal() {
       return parseInt(this.VerbruikLaag) + parseInt(this.VerbruikHoog);
     },
-    reset() {
-      this.$refs.form.reset();
-    },
-    resetValidation() {
-      this.$refs.form.resetValidation();
+    setShowResults(e) {
+      e.preventDefault();
+      this.showResults = true;
     },
   },
   computed: {
-    amounts() {
-      return this.$props.kwh;
-    },
     totalKwh() {
-      let total = parseInt(this.VerbruikLaag) + parseInt(this.VerbruikHoog);
+      let total = this.calculateTotal();
+      this.restNum = total;
       return isNaN(total) ? "" : total;
     },
+    totalfirstTierCosts() {
+      if (this.restNum >= this.firstTierBoundry) {
+        return this.firstTierBoundry * this.firstTierCost;
+      } else {
+        return "lower";
+      }
+    },
+  },
+  created() {
+    let firstTier = this.$props.kwh["firstTier"];
+    this.firstTierCost = firstTier["cost"];
+    this.firstTierBoundry = firstTier["boundry"];
   },
 };
 </script>
